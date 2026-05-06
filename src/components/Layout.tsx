@@ -1,8 +1,17 @@
 import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, FileText, Bell, Stethoscope, AlertTriangle, HeartPulse } from 'lucide-react';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, FileText, Bell, Stethoscope, AlertTriangle, HeartPulse, LogOut } from 'lucide-react';
+import { useAppContext } from '../context/AppContext';
 
 export const Layout: React.FC = () => {
+  const { logout } = useAppContext();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <div className="app-container">
       <aside className="sidebar">
@@ -12,7 +21,7 @@ export const Layout: React.FC = () => {
         </div>
         
         <nav className="nav-menu">
-          <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} end>
+          <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} end>
             <LayoutDashboard size={20} />
             <span>Dashboard</span>
           </NavLink>
@@ -37,6 +46,14 @@ export const Layout: React.FC = () => {
             <span>Emergency Mode</span>
           </NavLink>
         </nav>
+
+        <button 
+          onClick={handleLogout} 
+          className="btn btn-outline" 
+          style={{ marginTop: '2rem', width: '100%', borderColor: 'var(--border)', color: 'var(--text-muted)' }}
+        >
+          <LogOut size={20} /> Log Out
+        </button>
       </aside>
       
       <main className="main-content">

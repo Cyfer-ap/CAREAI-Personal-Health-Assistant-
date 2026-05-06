@@ -1,7 +1,10 @@
 import React from 'react';
-import { Phone, AlertTriangle, Navigation, HeartPulse, ShieldAlert } from 'lucide-react';
+import { Phone, AlertTriangle, Navigation, HeartPulse, ShieldAlert, AlertCircle } from 'lucide-react';
+import { useAppContext } from '../context/AppContext';
 
 export const Emergency: React.FC = () => {
+  const { profile } = useAppContext();
+
   return (
     <div>
       <header className="page-header" style={{ borderBottom: '2px solid var(--danger-light)', paddingBottom: '1rem' }}>
@@ -12,29 +15,44 @@ export const Emergency: React.FC = () => {
           If you are experiencing a medical emergency, seek immediate help.
         </p>
       </header>
+      
+      {/* Disclaimer */}
+      <div style={{ backgroundColor: 'var(--danger-light)', color: '#7f1d1d', padding: '0.75rem 1rem', borderRadius: 'var(--radius)', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 500 }}>
+        <AlertCircle size={20} />
+        This page is for emergency support only. It does not provide medical diagnosis.
+      </div>
 
       <div className="grid grid-cols-2" style={{ gap: '2rem' }}>
         {/* Actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div className="card" style={{ backgroundColor: 'var(--danger)', borderColor: 'var(--danger)', color: 'white', textAlign: 'center', padding: '3rem 2rem' }}>
-            <Phone size={48} style={{ margin: '0 auto 1rem auto' }} />
-            <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'white' }}>Call Ambulance</h2>
-            <p style={{ fontSize: '3rem', fontWeight: 700, margin: '0 0 1.5rem 0' }}>911</p>
-            <button className="btn" style={{ backgroundColor: 'white', color: 'var(--danger)', width: '100%', fontSize: '1.25rem', padding: '1rem' }}>
-              Call Now
-            </button>
+          <div className="card" style={{ backgroundColor: 'var(--danger)', borderColor: 'var(--danger)', color: 'white', textAlign: 'center', padding: '2rem' }}>
+            <Phone size={40} style={{ margin: '0 auto 1rem auto' }} />
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: 'white' }}>Call Ambulance</h2>
+            <p style={{ fontSize: '3rem', fontWeight: 700, margin: '0 0 1rem 0' }}>108</p>
+            <a href="tel:108" className="btn" style={{ backgroundColor: 'white', color: 'var(--danger)', width: '100%', fontSize: '1.125rem', padding: '0.75rem' }}>
+              Call 108
+            </a>
+          </div>
+
+          <div className="card" style={{ backgroundColor: 'var(--warning)', borderColor: 'var(--warning)', color: 'white', textAlign: 'center', padding: '2rem' }}>
+            <Phone size={32} style={{ margin: '0 auto 1rem auto' }} />
+            <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: 'white' }}>National Emergency Response</h2>
+            <p style={{ fontSize: '2.5rem', fontWeight: 700, margin: '0 0 1rem 0' }}>112</p>
+            <a href="tel:112" className="btn" style={{ backgroundColor: 'white', color: '#b45309', width: '100%', fontSize: '1.125rem', padding: '0.75rem' }}>
+              Call 112
+            </a>
           </div>
 
           <div className="grid grid-cols-2" style={{ gap: '1rem' }}>
-            <button className="card btn" style={{ display: 'flex', flexDirection: 'column', padding: '2rem 1rem', height: 'auto', backgroundColor: 'var(--card-bg)', color: 'var(--text-main)', borderColor: 'var(--border)' }}>
+            <a href={`tel:${profile.emergencyContact}`} className="card btn" style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem 1rem', height: 'auto', backgroundColor: 'var(--card-bg)', color: 'var(--text-main)', borderColor: 'var(--border)' }}>
               <Phone size={32} color="var(--primary)" style={{ marginBottom: '1rem' }} />
               <span style={{ fontWeight: 600, fontSize: '1.125rem' }}>Emergency Contact</span>
-              <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.25rem' }}>Wife: +1 234-567-8900</span>
-            </button>
-            <button className="card btn" style={{ display: 'flex', flexDirection: 'column', padding: '2rem 1rem', height: 'auto', backgroundColor: 'var(--card-bg)', color: 'var(--text-main)', borderColor: 'var(--border)' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.25rem' }}>{profile.emergencyContact || 'Not set'}</span>
+            </a>
+            <button className="card btn" style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem 1rem', height: 'auto', backgroundColor: 'var(--card-bg)', color: 'var(--text-main)', borderColor: 'var(--border)' }}>
               <Navigation size={32} color="var(--primary)" style={{ marginBottom: '1rem' }} />
               <span style={{ fontWeight: 600, fontSize: '1.125rem' }}>Nearby Hospitals</span>
-              <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.25rem' }}>Open Maps</span>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.25rem' }}>{profile.preferredHospital || 'Open Maps'}</span>
             </button>
           </div>
         </div>

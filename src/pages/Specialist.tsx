@@ -1,22 +1,30 @@
 import React, { useState } from 'react';
-import { Search, Stethoscope, CalendarPlus, MapPin, Star } from 'lucide-react';
+import { Search, Stethoscope, CalendarPlus, MapPin, Star, AlertTriangle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const Specialist: React.FC = () => {
   const [symptom, setSymptom] = useState('');
   const [suggestedDoctor, setSuggestedDoctor] = useState<string | null>(null);
   const [showBooking, setShowBooking] = useState(false);
+  const [isEmergency, setIsEmergency] = useState(false);
+
+  const emergencyKeywords = ['chest pain', 'breathlessness', 'breathing', 'bleeding', 'seizure', 'unconscious', 'stroke', 'heart attack', 'choking', 'severe pain'];
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const s = symptom.toLowerCase();
     
+    // Check for emergency
+    const hasEmergency = emergencyKeywords.some(keyword => s.includes(keyword));
+    setIsEmergency(hasEmergency);
+
     // Simple mock logic
-    if (s.includes('chest') || s.includes('heart')) setSuggestedDoctor('Cardiologist');
+    if (s.includes('chest') || s.includes('heart') || s.includes('breath')) setSuggestedDoctor('Emergency Care / Cardiologist');
     else if (s.includes('urine') || s.includes('kidney')) setSuggestedDoctor('Urologist');
     else if (s.includes('sugar') || s.includes('diabetes')) setSuggestedDoctor('Diabetologist');
     else if (s.includes('skin') || s.includes('rash')) setSuggestedDoctor('Dermatologist');
-    else if (s.includes('joint') || s.includes('bone')) setSuggestedDoctor('Orthopedic Doctor');
-    else if (s.includes('anxiety') || s.includes('sleep') || s.includes('mind')) setSuggestedDoctor('Psychiatrist');
+    else if (s.includes('joint') || s.includes('bone') || s.includes('arthritis')) setSuggestedDoctor('Orthopedic / Rheumatologist');
+    else if (s.includes('anxiety') || s.includes('sleep') || s.includes('mind')) setSuggestedDoctor('Psychiatrist / Psychologist');
     else if (s.includes('eye') || s.includes('vision')) setSuggestedDoctor('Ophthalmologist');
     else if (s.includes('stomach') || s.includes('digestion')) setSuggestedDoctor('Gastroenterologist');
     else setSuggestedDoctor('General Physician');
@@ -49,22 +57,38 @@ export const Specialist: React.FC = () => {
         </form>
       </div>
 
-      {suggestedDoctor && !showBooking && (
-        <div className="card" style={{ backgroundColor: 'var(--primary-light)', borderColor: 'var(--primary-light)', textAlign: 'center', padding: '3rem 2rem' }}>
-          <Stethoscope size={48} color="var(--primary)" style={{ margin: '0 auto 1rem auto' }} />
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: 'var(--primary-dark)' }}>CareAI Suggests</h2>
-          <p style={{ fontSize: '1.25rem', marginBottom: '1.5rem', color: 'var(--text-main)' }}>
-            Based on "{symptom}", you should consult a <strong>{suggestedDoctor}</strong>.
-          </p>
-          <button className="btn btn-primary" onClick={() => setShowBooking(true)}>
-            <CalendarPlus size={20} /> View Available {suggestedDoctor}s
-          </button>
+      {suggestedDoctor && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* Emergency Warning UI */}
+          {isEmergency && (
+            <div className="card" style={{ backgroundColor: 'var(--danger-light)', borderColor: 'var(--danger)', borderLeft: '4px solid var(--danger)', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+              <AlertTriangle size={32} color="var(--danger)" style={{ flexShrink: 0 }} />
+              <div>
+                <h3 style={{ color: '#991b1b', marginBottom: '0.5rem', fontSize: '1.25rem' }}>Medical Emergency Detected</h3>
+                <p style={{ color: '#7f1d1d', margin: '0 0 1rem 0', fontSize: '1.125rem' }}>
+                  The symptoms you entered may require immediate emergency care. Do not wait for an appointment.
+                </p>
+                <Link to="/emergency" className="btn btn-danger" style={{ textDecoration: 'none' }}>Go to Emergency Mode</Link>
+              </div>
+            </div>
+          )}
+
+          <div className="card" style={{ backgroundColor: 'var(--primary-light)', borderColor: 'var(--primary-light)', textAlign: 'center', padding: '3rem 2rem' }}>
+            <Stethoscope size={48} color="var(--primary)" style={{ margin: '0 auto 1rem auto' }} />
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: 'var(--primary-dark)' }}>CareAI Suggests</h2>
+            <p style={{ fontSize: '1.25rem', marginBottom: '1.5rem', color: 'var(--text-main)' }}>
+              Based on your input, you should consult a <strong>{suggestedDoctor}</strong>.
+            </p>
+            <button className="btn btn-primary" onClick={() => setShowBooking(true)}>
+              <CalendarPlus size={20} /> View Available Doctors
+            </button>
+          </div>
         </div>
       )}
 
       {showBooking && (
-        <div>
-          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>Available {suggestedDoctor}s near you</h3>
+        <div style={{ marginTop: '2rem' }}>
+          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>Available Doctors near you</h3>
           <div className="grid grid-cols-2">
             {[1, 2].map((doc) => (
               <div key={doc} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -74,7 +98,7 @@ export const Specialist: React.FC = () => {
                   </div>
                   <div>
                     <h4 style={{ fontSize: '1.125rem', margin: '0 0 0.25rem 0' }}>Dr. {doc === 1 ? 'Sarah Jenkins' : 'Michael Chang'}</h4>
-                    <p style={{ margin: 0, color: 'var(--primary)', fontWeight: 500 }}>{suggestedDoctor}</p>
+                    <p style={{ margin: 0, color: 'var(--primary)', fontWeight: 500 }}>{suggestedDoctor.split(' / ')[0]}</p>
                     <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                       <Star size={14} weight="fill" color="var(--warning)" /> 4.{8 + doc} (120+ reviews)
                     </p>
